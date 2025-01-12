@@ -63,8 +63,10 @@
     \RequirePackage{caption}
     % If the setspace is used in conjuction with the caption package, the caption
     % will be typeset with single spacing as default.
-    \captionsetup[table]{font=onehalfspacing}
-    \captionsetup[figure]{font=onehalfspacing}
+    % \captionsetup[table]{font=onehalfspacing}
+    % \captionsetup[figure]{font=onehalfspacing}
+    \captionsetup[table]{font=small}
+    \captionsetup[figure]{font=small}
 
     \let\abstractname\l_snu_cse_bsc_thesis_abstractname_en
     \let\contentsname\l_snu_cse_bsc_thesis_contentsname_en
@@ -224,7 +226,7 @@
       지도교수~:~\@advisor \\
       \vfill
       \fontsize{20pt}{23pt}\selectfont
-      이~논문을~공학학사~학위~논문으로~제출함. \\
+      이~보고서를~공학학사~학위~논문~대체~보고서로~제출함. \\
       \vfill
       \fontsize{18pt}{21pt}\selectfont
       \@date \\
@@ -250,7 +252,7 @@
       지도교수~:~\@advisor \\
       \vfill
       \fontsize{20pt}{23pt}\selectfont
-      이~논문을~공학학사~학위~논문으로~제출함. \\
+      이~보고서를~공학학사~학위~논문~대체~보고서로~제출함. \\
       \vfill
       \fontsize{18pt}{21pt}\selectfont
       \@date \\
