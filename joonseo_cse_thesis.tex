@@ -10,18 +10,19 @@
 
 % hyperref *must* be the last package to be loaded!
 \usepackage[pdfusetitle]{hyperref}
+\usepackage{indentfirst}
 
 \addbibresource{bib.bib}
 
-\title{SNU School of Engineering BS Thesis Template}
-\titlealt{서울대학교 공과대학 학사학위논문 템플릿}
+\title{Two Layer Path Planning for Multi-Map Navigation}
+\titlealt{다중 지도 네비게이션을 위한 이중 레이어 경로 계획}
 \author{장준서}
 \advisor{홍길동}
 \date{2025년 월 일}
 \approvaldate{2025년 8월}
 
-\koreankeywords{서울대학교, 공과대학, 학사학위논문, 템플릿}
-\englishkeywords{Seoul National University, College of Engineering, Bachelor's Thesis, Template}
+\koreankeywords{경로 계획, 자율 이동 로봇, 다중 지도 네비게이}
+\englishkeywords{Path Planning, Autonomous Mobile Robot, Multi Map Navigation}
 
 
 \begin{document}
@@ -29,7 +30,12 @@
 
 \pagenumbering{roman}
 \begin{abstract}
-  Abstract of the thesis
+This paper presents a hierarchical path-planning approach designed for robots operating across multiple maps. The proposed method utilizes a hybrid map structure consisting of two layers: an upper-layer graph that represents navigational waypoints and transitions between maps, and a lower-layer occupancy grid that provides detailed spatial information for precise movement.  
+
+Path planning is performed in three stages. First, the robot's current position is added as a node to the upper-layer graph. Second, a high-level path is computed using a shortest-path algorithm to determine the waypoints the robot must pass through. Finally, the lower layer is used to generate a detailed navigation path between waypoints while dynamically considering real-time positioning and obstacles.  
+
+This approach enables seamless navigation in large spaces, including multi-story buildings, by effectively managing map transitions through designated horizontal map change points and elevator nodes. The method ensures scalability and flexibility, allowing robots to operate efficiently across extensive areas. Future work will explore automatic generation of upper-layer nodes and real-time updates to further enhance adaptability.
+
 \end{abstract}
 
 \tableofcontents
@@ -61,6 +67,8 @@ Chapter 2 explains the background knowledge for autonomous robot navigation; Cha
 
 
 \chapter{Body}\label{chap:body}
+
+\section{Methodology}\label{sec:Methodology}
 The implemented path-planning method operates on a hybrid map consisting of two layers. The lower layer consists of occupancy grid maps, each uniquely identified by an ID and possessing its own independent coordinate system. During navigation, the robot uses a map corresponding to the current location, and its position is expressed in the coordinate system of that specific map. When a horizontal area is too large and must be divided into multiple maps, overlapping regions are introduced between adjacent maps. These common regions ensure seamless localization when the robot transitions from one map to another, allowing for accurate position estimation even after switching maps.
 
 The upper layer is a graph, where nodes are categorized into three types:
@@ -91,13 +99,21 @@ The second stage calculates the shortest path from the starting node to the dest
 
 The third stage involves performing global path planning in the lower layer to navigate from the current position to the next waypoint. This stage is similar to navigation within a single map, where real-time information such as the robot's current position and obstacles is used to compute the global path and local path. This process continues until the robot reaches the final destination.
 
+\section{Example of Implementation}\label{sec:Example}
 An example is illustrated in Figure ~\ref{fig:graph_outline}. Suppose the destinations are given as Dest. 4, Dest. 3, Dest. 2, and Dest. 1. First, the robot's current position is added to the graph, as shown in the figure. Then, Dijkstra’s algorithm is used to calculate the shortest path from the current position to Dest. 4. The resulting node array is “E.V A-1, E.V A-2, H.M.C.P 1, H.M.C.P. 2, E.V B-2, E.V B-3, Dest. 4”. The process is repeated by updating the starting point to the current destination and calculating the shortest path to the next destination. The results of these calculations can be found in Table ~\ref{tab: high level path planning}.
 
-After high-level path planning is completed, low-level path planning is performed. Figure ~\ref{fig: first_floor_low_level_pp} illustrates the robot performing path planning to reach the first waypoint, E.V A-1. Low-level path planning continues iteratively until no waypoints remain.
+After high-level path planning is completed, low-level path planning is performed. Figure ~\ref{fig:first_floor_low_level_pp} illustrates the robot performing path planning to reach the first waypoint, E.V A-1. Low-level path planning continues iteratively until no waypoints remain.
+
+\section{Discussion}\label{sec:Discussion}
+Unlike ~\cite{MultiStoreyBuildingNavigation}, this path-planning method uses only two layers. Earlier research structured nodes into multiple levels, such as building, floor, and region. In contrast, this implementation uses a single semantic layer, where each node contains all necessary information, including building ID, floor number, and map ID. The reason for not using multiple levels is to improve scalability. As the number of properties such as floor and region increases, distinguishing their hierarchical levels will become more challenging and the topological graph will become harder to manage. To avoid this complexity, all semantic nodes are placed at the same level, and the relationships between them are handled through edge connections. This approach makes the system more flexible and easier to expand.
+
+This method allows for easy integration with other elements using waypoints. The robot's screen can display the current waypoint as the destination, making it intuitive for users to understand the robot's movements. Additionally, specific actions to reach a given waypoint can be easily created using finite state machines (FSM) or behavior trees. For example, if the next two waypoints are elevators on the first floor and the second floor, a behavior tree could be structured as follows: "Move", "Board Elevator", "Press 2nd Floor Button" → "Wait" → "Exit Elevator".
+
+However, there are drawbacks. One major issue is that it takes a long time to create the upper layer in advance. Horizontal map change points and elevators must be manually specified. Moreover, since all nodes within the same map must be interconnected, the graph size increases significantly as the number of nodes increases. As the number and types of nodes increase, system maintenance will become more difficult. Additionally, if the starting point is the robot's current position, robot needs a time to add a new node to the graph. Longer loading times between setting the destination and moving can lead to a bad user experience. Therefore, it is important to divide the space using a reasonable number of maps, ensuring that there are not too many nodes within a single map while still avoiding excessive maps overall.
 
 \begin{table}[!b]
   \centering
-  \caption[Table example (ToC)]{An example of a table.}\label{tab: high level path planning}
+  \caption[Table example (ToC)]{Results of high-level path planning of given destinations.}\label{tab: high level path planning}
   \begin{tblr}{llp{10cm}}
     \toprule
     Start Node & End Node & Waypoints \\\midrule
@@ -123,7 +139,7 @@ After high-level path planning is completed, low-level path planning is performe
 \begin{figure}[!t]
   \centering
   \includegraphics[width=0.8\textwidth]{first_floor_low_level_pp.pdf}
-  \caption{}
+  \caption{Example of low-level path planning from "Current Position" to the first waypoint, "E.V. A-1".}
   \label{fig:first_floor_low_level_pp}
 \end{figure}
 
@@ -175,11 +191,16 @@ After high-level path planning is completed, low-level path planning is performe
 
 
 \chapter{Conclusion}\label{chap:conclusion}
-\lipsum[11]
+This report explains the path-planning method I implemented at Bear Robotics. It used in situations requiring multiple maps, like a multi-floor building. The proposed approach utilizes a new map structure consisting of two layers. By performing hierarchical path planning within each layer, the system can calculate routes between different locations. High level path planning provides a waypoint, such as the elevator, needed to move to another map. Low level path planning provides path or trajectory using conventional methodologies such as A* or RRT. This method allows robots to navigate freely across large spaces and accurately reach their destinations, even in multi-story buildings. In addition, the waypoints from high level path planning can clearly express the robot's path to users. In the future, this approach could be further improved by automating the generation of upper-layer nodes or dynamically updating the upper layer with real-time position data.
 
 \printbibliography
 
 \begin{abstract}[ko]
-  \jiwon[1]
+본 보고서에서는 여러 개의 지도를 활용하는 로봇을 위한 계층적 경로 계획 기법을 제안한다. 제안된 방법은 두 개의 layer로 구성된 하이브리드 맵 구조를 사용한다. 상위 layer는 그래프 구조로, 지도 간의 전환과 주요 경유지를 나타내며, 하위 layer는 점유 그리드 맵을 활용하여 정밀한 이동을 가능하게 한다.  
+
+경로 계획은 세 단계로 이루어진다. 첫째, 로봇의 현재 위치를 상위 layer의 그래프에 새로운 노드로 추가한다. 둘째, 최단 경로 알고리즘을 사용하여 로봇이 거쳐야 할 waypoint를 계산한다. 셋째, 하위 layer에서 실시간 위치 및 장애물 정보를 고려하여 waypoint 간의 세부 이동 경로를 생성한다.  
+
+이 방법은 수평 지도 전환 지점(Horizontal Map Change Point)과 엘리베이터 노드를 활용하여 넓은 공간 및 다층 건물에서도 원활한 이동을 가능하게 한다. 또한 확장성과 유연성을 보장하여 로봇이 광범위한 환경에서도 효과적으로 작동할 수 있도록 한다. 향후 연구에서는 상위 layer의 노드를 자동으로 생성하거나 실시간으로 업데이트하는 방식을 도입하여 적응성을 더욱 향상할 예정이다.
+
 \end{abstract}
 \end{document}
