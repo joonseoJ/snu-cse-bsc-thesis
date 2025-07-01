@@ -4,10 +4,6 @@
 % \usepackage{tikz}
 \usepackage{siunitx}
 
-% For lorem ipsum; remove these lines when writing your thesis
-\usepackage{lipsum}
-\usepackage{jiwonlipsum}
-
 % hyperref *must* be the last package to be loaded!
 \usepackage[pdfusetitle]{hyperref}
 \usepackage{indentfirst}
@@ -17,11 +13,11 @@
 \title{Two Layer Path Planning for Multi-Map Navigation}
 \titlealt{다중 지도 네비게이션을 위한 이중 레이어 경로 계획}
 \author{장준서}
-\advisor{홍길동}
-\date{2025년 월 일}
+\advisor{권태경}
+\date{2025년 4월 18일}
 \approvaldate{2025년 8월}
 
-\koreankeywords{경로 계획, 자율 이동 로봇, 다중 지도 네비게이}
+\koreankeywords{경로 계획, 자율 이동 로봇, 다중 지도 네비게이션}
 \englishkeywords{Path Planning, Autonomous Mobile Robot, Multi Map Navigation}
 
 
@@ -44,7 +40,8 @@ This approach enables seamless navigation in large spaces, including multi-story
 
 \chapter{Introduction}\label{chap:introduction}
 \pagenumbering{arabic}
-With advancements in autonomous driving technology, various autonomous robots are being utilized in everyday life. Representative examples include service robots that shuttle between kitchens and tables to deliver food and utensils~\cite{ServiPlus}, cleaning robots that roam specific areas to perform cleaning and disinfection tasks~\cite{ServiAir}, and logistics robots that transport goods in large warehouses~\cite{Carti100}.
+With advancements in autonomous driving technology, various autonomous robots are being utilized in everyday life. 
+Representative examples include service robots that shuttle between kitchens and tables to deliver food and drinks~\cite{ServiPlus}, cleaning robots that roam specific areas to perform cleaning and disinfection tasks~\cite{ServiAir}, and logistics robots that transport goods in large warehouses~\cite{Carti100}.
 
 These robots typically operate within designated areas, performing simple, repetitive tasks. As the demand for autonomous robots continues to grow, the size of the areas each robot must manage has also expanded. Whereas traditional service robots were confined to operating within the boundaries of a small restaurant, they are now required to transport food or goods across large shopping malls with multiple restaurants or multi-story office buildings~\cite{ServiLift}.
 
@@ -99,7 +96,7 @@ An example of this graph structure can be seen in Figure ~\ref{fig:graph_outline
 \begin{figure}[!t]
   \centering
   \includegraphics[width=0.8\textwidth]{gcg graph outline.pdf}
-  \caption{This figure illustrates an example of the upper layer of a hybrid map for a three-story building. The building is structured such that the 1st and 2nd floors are connected by Elevator A, while the 2nd and 3rd floors are connected by Elevator B. On the 1st floor, where the robot is currently located, the map includes two destination nodes and one elevator node representing Elevator A. The black node represents the robot's current location. Since it is a temporary node, it will be removed when the path planning is finished. The 2nd floor is divided into two separate maps: the left map contains one destination node, one elevator node for Elevator A, and one horizontal map change point (H.M.C.P. 1) that connects the left and right maps. The right map includes one elevator node for Elevator B and one horizontal map change point (H.M.C.P. 2) that connects the two maps on this floor. Although H.M.C.P. 1 and H.M.C.P. 2 are defined in the coordinate systems of their respective maps, they represent the same physical location. On the 3rd floor, the map includes one elevator node for Elevator B and one destination node.}
+  \caption[An example of the upper layer of a hybrid map]{This figure illustrates an example of the upper layer of a hybrid map for a three-story building. The building is structured such that the 1st and 2nd floors are connected by Elevator A, while the 2nd and 3rd floors are connected by Elevator B. On the 1st floor, where the robot is currently located, the map includes two destination nodes and one elevator node representing Elevator A. The black node represents the robot's current location. Since it is a temporary node, it will be removed when the path planning is finished. The 2nd floor is divided into two separate maps: the left map contains one destination node, one elevator node for Elevator A, and one horizontal map change point (H.M.C.P. 1) that connects the left and right maps. The right map includes one elevator node for Elevator B and one horizontal map change point (H.M.C.P. 2) that connects the two maps on this floor. Although H.M.C.P. 1 and H.M.C.P. 2 are defined in the coordinate systems of their respective maps, they represent the same physical location. On the 3rd floor, the map includes one elevator node for Elevator B and one destination node.}
   \label{fig:graph_outline}
 \end{figure}
 
@@ -146,7 +143,7 @@ Therefore, it is important to divide the space using a reasonable number of maps
 
 \begin{table}[!b]
   \centering
-  \caption[Table example (ToC)]{Results of high-level path planning of given destinations.}\label{tab: high level path planning}
+  \caption{Results of high-level path planning of given destinations.}\label{tab: high level path planning}
   \begin{tblr}{llp{10cm}}
     \toprule
     Start Node & End Node & Waypoints \\\midrule
